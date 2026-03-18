@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+@theme {
+    --color-primary: var(--primary-color, #f97316);
+    --color-headline: var(--headline-color, #ffffff);
+    --color-description: var(--description-color, #cbd5e1);
+    --color-section-primary: var(--primary-section-color, #0f172a);
+    --color-section-secondary: var(--secondary-section-color, #1e293b);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    @apply text-headline;
+}
+
+.spin-continuous {
+    animation: spin 10s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes progress {
+    from { width: 100%; }
+    to { width: 0%; }
+}
+
+.animate-progress {
+    animation: progress linear forwards;
+}
