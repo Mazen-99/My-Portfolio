@@ -39,7 +39,7 @@ app.use('/api/services', serviceRoutes(express))
 app.use('/uploads', express.static(path.join(__dirname, "uploads")))
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
+app.get('/', (req, res) => {
   res.status(200).json({ message: 'Server is running' })
 })
 
