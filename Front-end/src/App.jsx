@@ -9,11 +9,15 @@ import ContactSection from './Sections/ContactSection'
 import Footer from './components/Footer'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { getAbout } from './api/aboutApi'
+import { getServices } from './api/serviceApi'
+import { getProjects } from './api/projectApi'
+import { getTheme } from './api/themeApi'
 import LoadingScreen from './components/LoadingScreen'
 import ServerError from './components/ServerError'
 
 import { Routes, Route } from 'react-router'
 import Dashboard from './Dashboard'
+import { trackVisit } from './api/adminApi'
 
 const App = () => {
   const [isInitializing, setIsInitializing] = useState(true);
@@ -22,17 +26,31 @@ const App = () => {
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        // Try to fetch About data as a health check for the server
-        await getAbout();
-        // Artificial delay for smooth transition (optional, remove if you want it instant)
+        // Parallel fetch for all core data
+        const [aboutResult] = await Promise.allSettled([
+          getAbout(),
+          getServices(),
+          getProjects(),
+          getTheme(),
+          trackVisit()
+        ]);
+        
+        // If the core 'about' data failed, we consider the server offline
+        if (aboutResult.status === 'rejected') {
+          console.error('Core data fetch failed:', aboutResult.reason);
+          setServerStatus('offline');
+        } else {
+          setServerStatus('online');
+        }
+
+        // Short delay to ensure browser finishes rendering off-screen
         setTimeout(() => {
           setIsInitializing(false);
-          setServerStatus('online');
-        }, 2000);
+        }, 800);
       } catch (error) {
-        console.error('Initialization failed:', error);
-        setIsInitializing(false);
+        console.error('Unexpected initialization error:', error);
         setServerStatus('offline');
+        setIsInitializing(false);
       }
     };
 
@@ -51,7 +69,7 @@ const App = () => {
     <ThemeProvider>
       <Routes>
         <Route path="/" element={
-          <div className='bg-section-primary text-white pt-20 overflow-x-hidden'>
+          <div className='bg-section-primary text-headline pt-20 overflow-x-hidden transition-colors duration-500'>
             <Navbar />
             <HeroSection />
             <ServiceSection />

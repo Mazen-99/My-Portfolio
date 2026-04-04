@@ -1,6 +1,5 @@
 const Project = require('../schemas/Project');
-const fs = require('fs');
-const path = require('path');
+const cloudinary = require('cloudinary').v2;
 
 // GET /api/projects - Public endpoint
 exports.getProjects = async (req, res) => {
@@ -40,14 +39,11 @@ exports.createProject = async (req, res) => {
       techStack = [];
     }
 
-    // Create full image URL
-    const baseUrl = `${req.protocol}://${req.get('host')}`;
-    const imageUrl = `${baseUrl}/uploads/projects/${req.file.filename}`;
-
     const newProject = new Project({
       title: title.trim(),
       description: description.trim(),
-      image: imageUrl,
+      image: req.file.path, // Cloudinary URL
+      cloudinary_id: req.file.filename, // Cloudinary public_id
       liveUrl: liveUrl ? liveUrl.trim() : '',
       githubUrl: githubUrl ? githubUrl.trim() : '',
       techStack,
@@ -59,11 +55,9 @@ exports.createProject = async (req, res) => {
       project: newProject,
     });
   } catch (error) {
-    // Delete uploaded file if error occurs
-    if (req.file) {
-      fs.unlink(req.file.path, (err) => {
-        if (err) console.error('Error deleting file:', err);
-      });
+    // Delete uploaded image from Cloudinary if error occurs
+    if (req.file && req.file.filename) {
+      await cloudinary.uploader.destroy(req.file.filename);
     }
     console.error('Error creating project:', error);
     res.status(500).json({ message: 'Internal server error' });
@@ -79,11 +73,9 @@ exports.updateProject = async (req, res) => {
     // Find project
     const project = await Project.findById(req.params.id);
     if (!project) {
-      // Delete uploaded file if error occurs
-      if (req.file) {
-        fs.unlink(req.file.path, (err) => {
-          if (err) console.error('Error deleting file:', err);
-        });
+      // Delete uploaded image from Cloudinary if not used
+      if (req.file && req.file.filename) {
+        await cloudinary.uploader.destroy(req.file.filename);
       }
       return res.status(404).json({ message: 'Project not found' });
     }
@@ -92,8 +84,8 @@ exports.updateProject = async (req, res) => {
     if (title && title.trim()) project.title = title.trim();
     if (description && description.trim())
       project.description = description.trim();
-    if (liveUrl) project.liveUrl = liveUrl.trim();
-    if (githubUrl) project.githubUrl = githubUrl.trim();
+    if (liveUrl !== undefined) project.liveUrl = liveUrl.trim();
+    if (githubUrl !== undefined) project.githubUrl = githubUrl.trim();
 
     // Update techStack
     if (techStack) {
@@ -107,21 +99,13 @@ exports.updateProject = async (req, res) => {
 
     // Handle image upload
     if (req.file) {
-      // Delete old image if it exists
-      if (project.image) {
-        const oldImageFileName = project.image.split('/').pop();
-        const oldImagePath = path.join(
-          __dirname,
-          '../../uploads/projects',
-          oldImageFileName,
-        );
-        fs.unlink(oldImagePath, (err) => {
-          if (err) console.error('Error deleting old image:', err);
-        });
+      // Delete old image from Cloudinary
+      if (project.cloudinary_id) {
+        await cloudinary.uploader.destroy(project.cloudinary_id);
       }
-      // Set new image URL with full URL
-      const baseUrl = `${req.protocol}://${req.get('host')}`;
-      project.image = `${baseUrl}/uploads/projects/${req.file.filename}`;
+      // Set new image URL and ID
+      project.image = req.file.path;
+      project.cloudinary_id = req.file.filename;
     }
 
     await project.save();
@@ -130,11 +114,9 @@ exports.updateProject = async (req, res) => {
       project,
     });
   } catch (error) {
-    // Delete uploaded file if error occurs
-    if (req.file) {
-      fs.unlink(req.file.path, (err) => {
-        if (err) console.error('Error deleting file:', err);
-      });
+    // Delete uploaded image from Cloudinary if error occurs
+    if (req.file && req.file.filename) {
+      await cloudinary.uploader.destroy(req.file.filename);
     }
     console.error('Error updating project:', error);
     res.status(500).json({ message: 'Internal server error' });
@@ -144,26 +126,18 @@ exports.updateProject = async (req, res) => {
 // DELETE /api/projects/:id - Admin only
 exports.deleteProject = async (req, res) => {
   try {
-    const project = await Project.findByIdAndDelete(req.params.id);
+    const project = await Project.findById(req.params.id);
 
     if (!project) {
       return res.status(404).json({ message: 'Project not found' });
     }
 
-    // Delete image from filesystem
-    if (project.image) {
-      // Extract filename from URL
-      const imageFileName = project.image.split('/').pop();
-      const imagePath = path.join(
-        __dirname,
-        '../../uploads/projects',
-        imageFileName,
-      );
-      fs.unlink(imagePath, (err) => {
-        if (err) console.error('Error deleting image:', err);
-      });
+    // Delete image from Cloudinary
+    if (project.cloudinary_id) {
+      await cloudinary.uploader.destroy(project.cloudinary_id);
     }
 
+    await project.deleteOne();
     res.status(200).json({ message: 'Project deleted successfully' });
   } catch (error) {
     console.error('Error deleting project:', error);

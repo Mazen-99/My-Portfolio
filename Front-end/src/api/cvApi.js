@@ -1,6 +1,6 @@
 import API_URL from "./config";
 
-// Upload CV
+// Upload CV to Cloudinary as a PDF (Admin only)
 export const uploadCV = async (cvFile, password) => {
   try {
     const formData = new FormData();
@@ -23,7 +23,7 @@ export const uploadCV = async (cvFile, password) => {
   }
 };
 
-// Delete CV
+// Reset/Delete CV from Cloudinary (Admin only)
 export const deleteCV = async (password) => {
   try {
     const response = await fetch(`${API_URL}/cv`, {
@@ -42,30 +42,7 @@ export const deleteCV = async (password) => {
   }
 };
 
-// Download CV
-export const downloadCV = async () => {
-  const response = await fetch(`${API_URL}/cv`)
-
-  if (!response.ok) {
-    let message = 'Failed to download CV'
-
-    try {
-      const data = await response.json()
-      message = data.message || message
-    } catch (_) { }
-
-    const error = new Error(message)
-    error.status = response.status
-    throw error
-  }
-
-  const contentType = response.headers.get('content-type')
-
-  if (!contentType || !contentType.includes('application/pdf')) {
-    const error = new Error('Invalid file format')
-    error.status = 400
-    throw error
-  }
-
-  return await response.blob()
-}
+// Get the direct CV download URL
+export const getCvDownloadUrl = () => {
+  return `${API_URL}/cv`;
+};

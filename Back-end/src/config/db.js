@@ -2,13 +2,26 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 
 const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log('✅ Connected to Database');
-  } catch (error) {
-    console.error('❌ Failed to connect to Database:', error.message);
-    process.exit(1); // Exit process with failure
+  if (mongoose.connection.readyState >= 1) return;
+
+  const mongoUrl = process.env.MONGO_URI;
+  if (!mongoUrl) {
+    throw new Error("MONGO_URI environment variable is MISSING! Did you add it to Vercel/Netlify?");
   }
-};
+
+  try {
+    mongoose.set('strictQuery', false)
+    mongoose.set('bufferCommands', false)
+    await mongoose.connect(mongoUrl, {
+      connectTimeoutMS: 20000,
+      socketTimeoutMS: 45000,
+    })
+    console.log("Connected to MongoDB ✅")
+  }
+  catch (err) {
+    console.error("Database Connection Error ❌:", err.message)
+    throw err;
+  }
+}
 
 module.exports = connectDB;

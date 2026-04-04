@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { FaGithub, FaExternalLinkAlt } from 'react-icons/fa'
+import { FaEdit, FaTrash } from 'react-icons/fa'
 
-const ProjectCard = ({ project }) => {
+const DashboardProjectCard = ({ project, onEdit, onDelete }) => {
     const {
         title,
         description,
         image,
         techStack,
-        liveUrl,
-        githubUrl,
     } = project
 
     const [isActive, setIsActive] = useState(false)
@@ -26,8 +24,8 @@ const ProjectCard = ({ project }) => {
     }
 
     const toggleActive = (e) => {
-        // Prevent toggle if clicking on links
-        if (e.target.closest('a')) return
+        // Prevent toggle if clicking on buttons
+        if (e.target.closest('button')) return
         
         setIsActive(!isActive)
         if (!isActive) {
@@ -44,7 +42,7 @@ const ProjectCard = ({ project }) => {
     return (
         <div 
             onClick={toggleActive}
-            className={`group relative w-full h-[400px] bg-section-primary rounded-2xl overflow-hidden shadow-2xl transition-all duration-500 border border-slate-700/30 hover:border-primary/50 hover:shadow-primary/20 cursor-pointer ${isActive ? 'border-primary/50 shadow-primary/20' : ''}`}
+            className={`group relative w-full h-[400px] bg-section-primary rounded-3xl overflow-hidden shadow-2xl transition-all duration-500 border border-white/5 hover:border-primary/50 hover:shadow-primary/20 cursor-pointer ${isActive ? 'border-primary/50 shadow-primary/20' : ''}`}
         >
             {/* Image */}
             <div className='absolute inset-0 w-full h-full'>
@@ -58,51 +56,41 @@ const ProjectCard = ({ project }) => {
             </div>
 
             {/* Content Overlay */}
-            <div className={`absolute inset-0 p-6 md:p-8 flex flex-col transition-all duration-500 backdrop-blur-[2px] group-hover:opacity-100 group-hover:backdrop-blur-sm ${isActive ? 'opacity-100 backdrop-blur-sm' : 'opacity-0'}`}>
+            <div className={`absolute inset-0 p-8 flex flex-col transition-all duration-500 backdrop-blur-[2px] group-hover:opacity-100 group-hover:backdrop-blur-sm ${isActive ? 'opacity-100 backdrop-blur-sm' : 'opacity-0'}`}>
                 
-                {/* Top Section: Title and Icons - Fixed at Top */}
+                {/* Top Section: Title and Actions */}
                 <div className={`flex justify-between items-start transition-transform duration-500 delay-75 group-hover:translate-y-0 ${isActive ? 'translate-y-0' : '-translate-y-4'}`}>
-                    <h3 className='text-2xl md:text-3xl font-bold text-white! tracking-tight drop-shadow-lg max-w-[65%]'>
+                    <h3 className='text-2xl font-bold text-white tracking-tight drop-shadow-lg max-w-[65%] uppercase'>
                         {title}
                     </h3>
 
                     <div className='flex gap-3 items-center'>
-                        {githubUrl && (
-                            <a
-                                href={githubUrl}
-                                target='_blank'
-                                rel='noopener noreferrer'
-                                className='p-2.5 bg-white/10 hover:bg-primary/20 rounded-full text-white hover:text-primary transition-all duration-300 border border-white/20 hover:border-primary/50 group/icon backdrop-blur-md'
-                                title='GitHub Repository'
-                                onClick={(e) => e.stopPropagation()}
-                            >
-                                <FaGithub size={20} className='group-hover/icon:scale-110 transition-transform' />
-                            </a>
-                        )}
-                        {liveUrl && (
-                            <a
-                                href={liveUrl}
-                                target='_blank'
-                                rel='noopener noreferrer'
-                                className='p-2.5 bg-white/10 hover:bg-primary/20 rounded-full text-white hover:text-primary transition-all duration-300 border border-white/20 hover:border-primary/50 group/icon backdrop-blur-md'
-                                title='Live Demo'
-                                onClick={(e) => e.stopPropagation()}
-                            >
-                                <FaExternalLinkAlt size={18} className='group-hover/icon:scale-110 transition-transform' />
-                            </a>
-                        )}
+                        <button
+                            onClick={(e) => { e.stopPropagation(); onEdit(project); }}
+                            className='p-3 bg-blue-500/20 hover:bg-blue-500 rounded-2xl text-blue-400 hover:text-white transition-all duration-300 border border-blue-500/20 backdrop-blur-md group/btn shadow-lg'
+                            title='Edit Project'
+                        >
+                            <FaEdit size={16} className='group-hover/btn:scale-110 transition-transform' />
+                        </button>
+                        <button
+                            onClick={(e) => { e.stopPropagation(); onDelete(project); }}
+                            className='p-3 bg-red-500/20 hover:bg-red-500 rounded-2xl text-red-400 hover:text-white transition-all duration-300 border border-red-500/20 backdrop-blur-md group/btn shadow-lg'
+                            title='Delete Project'
+                        >
+                            <FaTrash size={16} className='group-hover/btn:scale-110 transition-transform' />
+                        </button>
                     </div>
                 </div>
 
-                {/* Spacer to push content to bottom */}
+                {/* Spacer */}
                 <div className='flex-1' />
 
-                {/* Bottom Content Area: Description grows upwards */}
+                {/* Bottom Content Area */}
                 <div className={`transition-transform duration-500 delay-150 group-hover:translate-y-0 ${isActive ? 'translate-y-0' : 'translate-y-8'} max-h-[70%] flex flex-col justify-end`}>
                     
                     {/* Scrollable Description */}
                     <div className='overflow-y-auto pr-2 custom-scrollbar mb-4'>
-                        <p className='text-gray-100! text-sm md:text-[15px] leading-relaxed drop-shadow-md whitespace-pre-wrap text-left'>
+                        <p className='text-gray-100 text-sm leading-relaxed drop-shadow-md whitespace-pre-wrap text-left'>
                             {description}
                         </p>
                     </div>
@@ -114,7 +102,7 @@ const ProjectCard = ({ project }) => {
                                 {techStack.map((tech, index) => (
                                     <span
                                         key={index}
-                                        className='bg-primary/20 text-primary text-[12px] tracking-wider font-bold px-3 py-1 rounded-full border border-primary/30 backdrop-blur-sm'
+                                        className='bg-primary/20 text-primary text-[10px] tracking-wider font-bold px-3 py-1 rounded-full border border-primary/30 backdrop-blur-sm uppercase'
                                     >
                                         {tech}
                                     </span>
@@ -131,4 +119,4 @@ const ProjectCard = ({ project }) => {
     )
 }
 
-export default ProjectCard
+export default DashboardProjectCard

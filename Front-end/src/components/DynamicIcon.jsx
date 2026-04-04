@@ -6,15 +6,20 @@ import * as HiIcons from 'react-icons/hi';
 import * as MdIcons from 'react-icons/md';
 
 const DynamicIcon = ({ name, size = 24, className = "" }) => {
-    // Combine all icon sets
-    const allIcons = { ...FaIcons, ...SiIcons, ...RiIcons, ...BiIcons, ...HiIcons, ...MdIcons };
+    // 1. Support for Devicon (CSS-based icons)
+    if (name?.startsWith('devicon-')) {
+        return <i 
+            className={`${name} ${className}`} 
+            style={{ fontSize: size }} 
+        />;
+    }
 
-    // Look up the icon
+    // 2. Support for React-Icons (Component-based icons)
+    const allIcons = { ...FaIcons, ...SiIcons, ...RiIcons, ...BiIcons, ...HiIcons, ...MdIcons };
     const IconComponent = allIcons[name];
 
-    // If icon not found, fallback to a default or nothing
     if (!IconComponent) {
-        return <FaIcons.FaQuestionCircle size={size} className={className} />;
+        return <FaIcons.FaExclamationTriangle size={size} className={className} />;
     }
 
     return <IconComponent size={size} className={className} />;

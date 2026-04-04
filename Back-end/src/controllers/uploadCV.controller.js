@@ -77,6 +77,7 @@ exports.downloadCV = async (req, res, next) => {
 
         res.setHeader('Content-Type', 'application/pdf')
         res.setHeader('Content-Disposition', 'attachment; filename="Mazen Ahmed CV.pdf"')
+        
         return res.download(filePath, 'Mazen Ahmed CV.pdf', (err) => {
             if (err) return next(err)
         })

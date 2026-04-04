@@ -110,7 +110,7 @@ const ServiceManager = ({ services, onSave, password }) => {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-xs font-black text-gray-400 uppercase tracking-widest px-1">Icon Identity (React-Icons Name)</label>
+                                <label className="text-xs font-black text-gray-400 uppercase tracking-widest px-1">Icon Identity</label>
                                 <div className="flex gap-4">
                                     <input
                                         className="flex-1 bg-black/40 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-primary transition font-mono"
@@ -123,7 +123,7 @@ const ServiceManager = ({ services, onSave, password }) => {
                                         <DynamicIcon name={form.icon} size={24} />
                                     </div>
                                 </div>
-                                <p className="text-[10px] text-gray-500 mt-1 px-1 italic">Use FaIcons, SiIcons, etc. (e.g., FaNodeJs, SiReact)</p>
+                                <p className="text-[10px] text-gray-500 mt-1 px-1 italic">Use React-Icons Name (e.g., FaNodeJs, SiReact)</p>
                             </div>
                         </div>
 
@@ -144,7 +144,7 @@ const ServiceManager = ({ services, onSave, password }) => {
                                 onClick={handleCloseForm}
                                 className="px-8 py-4 rounded-xl font-bold text-gray-400 hover:text-white transition cursor-pointer"
                             >
-                                ABORT
+                                Cancel
                             </button>
                             <button
                                 type="submit"

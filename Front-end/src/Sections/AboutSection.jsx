@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { getAbout } from '../api/aboutApi'
+import { motion } from 'framer-motion'
 
 const AboutSection = () => {
     const [loading, setLoading] = useState(true)
@@ -20,30 +21,35 @@ const AboutSection = () => {
         fetchAboutData()
     }, [])
 
-    if (loading) {
-        return (
-            <section id="about" className="min-h-screen bg-section-primary flex items-center justify-center text-white">
-                Loading...
-            </section>
-        )
-    }
+    if (loading) return null;
 
     return (
-        <section id='about' className='min-h-screen bg-section-primary text-white flex flex-col items-center pt-15'>
+        <section id='about' className='min-h-screen bg-section-primary text-headline flex flex-col items-center pt-15'>
             <div className='container mx-auto px-4 md:px-8 w-full'>
-                <div className='text-center mb-12 relative '>
+                <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className='text-center mb-12 relative '
+                >
                     <h2 className='text-4xl lg:text-5xl font-bold mb-4'>
                         About <span className='text-primary'>Me</span>
                     </h2>
-                </div>
+                </motion.div>
 
                 <div className='max-w-3xl mx-auto'>
                     {/* Text */}
-                    <div className='text-center'>
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.2 }}
+                        className='text-center'
+                    >
                         <p className='text-description text-lg leading-relaxed mb-6 whitespace-pre-wrap'>
                             {aboutData}
                         </p>
-                    </div>
+                    </motion.div>
                 </div>
             </div>
         </section>

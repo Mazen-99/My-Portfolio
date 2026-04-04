@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { checkAdmin } from './api/adminApi';
+import { checkAdminAuth as checkAdmin } from './api/adminApi';
 import { getAbout } from './api/aboutApi';
 import { getProjects } from './api/projectApi';
 import { getTheme } from './api/themeApi';
 import { getServices } from './api/serviceApi';
-import { FaUser, FaProjectDiagram, FaPalette, FaSignOutAlt, FaTimes, FaRocket, FaBars } from 'react-icons/fa';
+import { FaUser, FaProjectDiagram, FaPalette, FaRocket, FaBars, FaUsers } from 'react-icons/fa';
 
 // Dashboard Sections
 import AdminLogin from './DashboardSections/AdminLogin';
@@ -13,7 +13,7 @@ import AboutManager from './DashboardSections/AboutManager';
 import ProjectManager from './DashboardSections/ProjectManager';
 import ThemeManager from './DashboardSections/ThemeManager';
 import ServiceManager from './DashboardSections/ServiceManager';
-// import { FaBars } from 'react-icons/fa6';
+import VisitorsManager from './DashboardSections/VisitorsManager';
 
 const Dashboard = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -34,7 +34,8 @@ const Dashboard = () => {
         { id: 'about', label: 'About', icon: <FaUser /> },
         { id: 'projects', label: 'Projects', icon: <FaProjectDiagram /> },
         { id: 'services', label: 'Services', icon: <FaRocket /> },
-        { id: 'theme', label: 'Theme Settings', icon: <FaPalette /> }
+        { id: 'theme', label: 'Theme Settings', icon: <FaPalette /> },
+        { id: 'visitors', label: 'Visitors', icon: <FaUsers /> }
     ];
 
     // Persist active tab
@@ -48,10 +49,14 @@ const Dashboard = () => {
         setLoading(true);
         setError('');
         try {
-            await checkAdmin(password);
-            setIsAuthenticated(true);
-            localStorage.setItem('admin_pwd', password);
-            fetchInitialData();
+            const ok = await checkAdmin(password);
+            if (ok) {
+                setIsAuthenticated(true);
+                localStorage.setItem('admin_pwd', password);
+                fetchInitialData();
+            } else {
+                setError('Invalid password');
+            }
         } catch (err) {
             setError(err.message || 'Invalid password');
         } finally {
@@ -84,9 +89,11 @@ const Dashboard = () => {
             setPassword(savedPwd);
             // Verify and auto-login
             checkAdmin(savedPwd)
-                .then(() => {
-                    setIsAuthenticated(true);
-                    fetchInitialData();
+                .then((ok) => {
+                    if (ok) {
+                        setIsAuthenticated(true);
+                        fetchInitialData();
+                    }
                 })
                 .catch(() => localStorage.removeItem('admin_pwd'));
         }
@@ -105,13 +112,14 @@ const Dashboard = () => {
     }
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white flex flex-col lg:flex-row font-sans selection:bg-primary/30 relative">
+        <div className="min-h-screen bg-section-primary text-headline flex flex-col lg:flex-row font-sans selection:bg-primary/30 relative transition-colors duration-500">
             {/* Sidebar */}
             <Sidebar
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
                 isOpen={sidebarOpen}
                 setIsOpen={setSidebarOpen}
+                tabs={tabs} // Pass dynamic tabs
                 onLogout={() => {
                     localStorage.removeItem('admin_pwd');
                     setIsAuthenticated(false);
@@ -119,12 +127,12 @@ const Dashboard = () => {
             />
 
             {/* Main Content */}
-            <main className="flex-1 min-h-screen overflow-y-auto bg-[radial-gradient(circle_at_top_right,var(--tw-gradient-stops))] from-slate-900/20 via-transparent to-transparent flex flex-col">
+            <main className="flex-1 min-h-screen overflow-y-auto flex flex-col transition-colors duration-500">
                 {/* Mobile Header */}
-                <header className="lg:hidden flex items-center justify-between p-6 bg-slate-900/40 backdrop-blur-md border-b border-white/5 sticky top-0 z-50">
+                <header className="lg:hidden flex items-center justify-between p-6 bg-section-secondary/40 backdrop-blur-md border-b border-white/5 sticky top-0 z-50">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center font-bold text-lg shadow-lg shadow-primary/20">M</div>
-                        <h1 className="text-lg font-bold tracking-tight">Admin <span className="text-primary text-sm">Dash</span></h1>
+                        <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center font-bold text-lg shadow-lg shadow-primary/20 text-white">M</div>
+                        <h1 className="text-lg font-bold tracking-tight text-headline">Admin <span className="text-primary text-sm">Dash</span></h1>
                     </div>
                     <button
                         onClick={() => setSidebarOpen(true)}
@@ -134,17 +142,22 @@ const Dashboard = () => {
                     </button>
                 </header>
 
-                <div className="p-6 md:p-12 flex-1">
-                    <header className="mb-12 flex justify-between items-end">
+                <div className="p-6 md:p-12 flex-1 relative overflow-hidden">
+                    {/* Background Light Effects */}
+                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] translate-x-1/4 -translate-y-1/4 pointer-events-none" />
+                    
+                    <header className="mb-12 flex justify-between items-end relative z-10">
                         <div>
-                            <div className="hidden md:flex items-center gap-2 text-primary text-sm font-bold uppercase tracking-widest mb-2 px-1">
-                                <span className="w-8 h-[2px] bg-primary"></span> System Management
+                            <div className="hidden md:flex items-center gap-2 text-primary text-sm font-black uppercase tracking-[0.3em] mb-3 px-1">
+                                <span className="w-10 h-[3px] bg-primary rounded-full"></span> SYSTEM MANAGEMENT
                             </div>
-                            <h2 className="text-4xl md:text-6xl font-black capitalize tracking-tight bg-linear-to-r from-white to-gray-500 bg-clip-text text-transparent">{activeTab}</h2>
+                            <h2 className="text-4xl md:text-7xl font-black capitalize tracking-tighter text-headline italic">
+                                {activeTab} <span className="text-primary not-italic">.</span>
+                            </h2>
                         </div>
                     </header>
 
-                    <section className="bg-slate-900/30 backdrop-blur-sm rounded-3xl md:rounded-4xl border border-white/5 p-6 md:p-10 shadow-2xl overflow-hidden">
+                    <section className="bg-section-secondary/30 backdrop-blur-xl rounded-[2.5rem] md:rounded-[3.5rem] border border-white/5 p-6 md:p-12 shadow-2xl relative z-10 transition-colors duration-500">
                         {activeTab === 'about' && (
                             <AboutManager data={aboutData} onSave={fetchInitialData} password={password} />
                         )}
@@ -156,6 +169,9 @@ const Dashboard = () => {
                         )}
                         {activeTab === 'services' && (
                             <ServiceManager services={services} onSave={fetchInitialData} password={password} />
+                        )}
+                        {activeTab === 'visitors' && (
+                            <VisitorsManager adminPassword={password} />
                         )}
                     </section>
                 </div>

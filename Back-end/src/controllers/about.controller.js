@@ -16,7 +16,7 @@ exports.getAbout = async (req, res) => {
 // PUT /api/about
 exports.updateAbout = async (req, res) => {
   try {
-    let { name, phone, email, titles, bio, description, skills, cv, socials } = req.body;
+    let { name, phone, email, titles, bio, description, skills, skillCategories, cv, socials } = req.body;
 
     // Handle FormData stringified fields
     if (typeof titles === 'string') {
@@ -28,12 +28,15 @@ exports.updateAbout = async (req, res) => {
     if (typeof socials === 'string') {
       try { socials = JSON.parse(socials); } catch (e) { /* use as is */ }
     }
+    if (typeof skillCategories === 'string') {
+      try { skillCategories = JSON.parse(skillCategories); } catch (e) { /* use as is */ }
+    }
 
     if (skills && Array.isArray(skills)) {
       for (const skill of skills) {
-        if (!skill.name || !skill.icon) {
+        if (!skill.name || !skill.icon || !skill.category) {
           return res.status(400).json({
-            message: 'Each skill must have a name and an icon',
+            message: 'Each skill must have a name, icon, and category',
           });
         }
       }
@@ -50,6 +53,7 @@ exports.updateAbout = async (req, res) => {
         bio,
         description,
         skills,
+        skillCategories,
         cv,
         socials
       });
@@ -61,6 +65,7 @@ exports.updateAbout = async (req, res) => {
       about.bio = bio;
       about.description = description;
       if (skills) about.skills = skills;
+      if (skillCategories) about.skillCategories = skillCategories;
       if (cv !== undefined) about.cv = cv;
       if (socials) about.socials = socials;
     }

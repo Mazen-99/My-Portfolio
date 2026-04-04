@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { FaPalette, FaRocket, FaSpinner } from 'react-icons/fa';
+import { FaPalette, FaRocket, FaSpinner, FaSun, FaMoon, FaHeading } from 'react-icons/fa';
 import { setTheme } from '../api/themeApi';
 import Toast from '../components/Toast';
 
 const ThemeManager = ({ data, onSave, password }) => {
     const [form, setForm] = useState({
         primary: '#f97316',
-        headline: '#ffffff',
+        darkHeadline: '#ffffff',
+        lightHeadline: '#0f172a',
         description: '#94a3b8',
-        primarySection: '#0f172a',
-        secondarySection: '#1e293b',
+        darkPrimarySection: '#0f172a',
+        lightPrimarySection: '#f8fafc',
+        darkSecondarySection: '#1e293b',
+        lightSecondarySection: '#f1f5f9',
         ...data
     });
     const [saving, setSaving] = useState(false);
@@ -24,7 +27,7 @@ const ThemeManager = ({ data, onSave, password }) => {
         setSaving(true);
         try {
             await setTheme(form, password);
-            setToast({ show: true, message: 'Visual Identity forged successfully!', type: 'success' });
+            setToast({ show: true, message: 'Comprehensive Visual Identity forged successfully!', type: 'success' });
             onSave();
         } catch (err) {
             setToast({ show: true, message: err.message || 'Failed to update theme', type: 'error' });
@@ -33,14 +36,16 @@ const ThemeManager = ({ data, onSave, password }) => {
         }
     };
 
-    const ColorInput = ({ label, dbField, value, onChange }) => (
+    const ColorInput = ({ label, dbField, value, onChange, icon }) => (
         <div className="space-y-4 group">
             <div className="flex justify-between items-center px-1">
-                <label className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] group-hover:text-primary transition-colors">{label}</label>
+                <label className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] group-hover:text-primary transition-colors flex items-center gap-2">
+                    {icon} {label}
+                </label>
                 <span className="text-[10px] font-mono text-gray-600 bg-white/5 px-2 py-0.5 rounded-md border border-white/5">{dbField}</span>
             </div>
             <div className="flex items-center gap-4 bg-black/40 p-4 rounded-3xl border border-white/10 group-hover:border-primary/40 transition duration-500 hover:bg-black/60 shadow-inner">
-                <div className="relative flex-shrink-0">
+                <div className="relative shrink-0">
                     <input
                         type="color"
                         className="w-14 h-14 rounded-2xl bg-transparent cursor-pointer border-0 p-0 overflow-hidden"
@@ -55,7 +60,7 @@ const ThemeManager = ({ data, onSave, password }) => {
                         value={value}
                         onChange={e => onChange(e.target.value)}
                     />
-                    <div className="h-px w-full bg-gradient-to-r from-white/10 to-transparent"></div>
+                    <div className="h-px w-full bg-linear-to-r from-white/10 to-transparent"></div>
                 </div>
             </div>
         </div>
@@ -73,43 +78,80 @@ const ThemeManager = ({ data, onSave, password }) => {
 
             <div className="flex items-center justify-between mb-2">
                 <div>
-                    <h3 className="text-2xl font-black text-white flex items-center gap-3">
-                        <FaPalette className="text-primary" /> Visual Identity
+                    <h3 className="text-2xl font-black text-white flex items-center gap-3 italic uppercase tracking-tight">
+                        <FaPalette className="text-primary" /> Visual Identity Ecosystem
                     </h3>
-                    <p className="text-description text-sm mt-1">Sculpt the professional aesthetic of your portfolio ecosystem.</p>
+                    <p className="text-description text-sm mt-1">Sculpt modern aesthetics with separate identities for Dark and Light experiences.</p>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+            {/* Core & Shared Colors */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 bg-white/2 p-8 rounded-4xl border border-white/5">
                 <ColorInput
-                    label="Accent Color"
+                    label="Accent Color (Shared)"
                     dbField="primary"
                     value={form.primary}
                     onChange={val => setForm({ ...form, primary: val })}
                 />
                 <ColorInput
-                    label="Title Color"
-                    dbField="headline"
-                    value={form.headline}
-                    onChange={val => setForm({ ...form, headline: val })}
-                />
-                <ColorInput
-                    label="Body Text"
+                    label="Body Text Color (Shared)"
                     dbField="description"
                     value={form.description}
                     onChange={val => setForm({ ...form, description: val })}
                 />
-                <ColorInput
-                    label="Deep Background"
-                    dbField="primarySection"
-                    value={form.primarySection}
-                    onChange={val => setForm({ ...form, primarySection: val })}
+            </div>
+
+            {/* Title Colors (Dark vs Light) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+                <ColorInput 
+                    icon={<FaHeading className="text-blue-500" />}
+                    label="Dark Headline Text" 
+                    dbField="darkHeadline" 
+                    value={form.darkHeadline} 
+                    onChange={val => setForm({ ...form, darkHeadline: val })} 
                 />
-                <ColorInput
-                    label="Surface Background"
-                    dbField="secondarySection"
-                    value={form.secondarySection}
-                    onChange={val => setForm({ ...form, secondarySection: val })}
+                <ColorInput 
+                    icon={<FaHeading className="text-yellow-500" />}
+                    label="Light Headline Text" 
+                    dbField="lightHeadline" 
+                    value={form.lightHeadline} 
+                    onChange={val => setForm({ ...form, lightHeadline: val })} 
+                />
+            </div>
+
+            {/* Primary Sections (Dark vs Light) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+                <ColorInput 
+                    icon={<FaMoon className="text-blue-500" />}
+                    label="Dark Primary Section" 
+                    dbField="darkPrimarySection" 
+                    value={form.darkPrimarySection} 
+                    onChange={val => setForm({ ...form, darkPrimarySection: val })} 
+                />
+                <ColorInput 
+                    icon={<FaSun className="text-yellow-500" />}
+                    label="Light Primary Section" 
+                    dbField="lightPrimarySection" 
+                    value={form.lightPrimarySection} 
+                    onChange={val => setForm({ ...form, lightPrimarySection: val })} 
+                />
+            </div>
+
+            {/* Secondary Sections (Dark vs Light) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+                <ColorInput 
+                    icon={<FaMoon className="text-blue-500" />}
+                    label="Dark Secondary Section" 
+                    dbField="darkSecondarySection" 
+                    value={form.darkSecondarySection} 
+                    onChange={val => setForm({ ...form, darkSecondarySection: val })} 
+                />
+                <ColorInput 
+                    icon={<FaSun className="text-yellow-500" />}
+                    label="Light Secondary Section" 
+                    dbField="lightSecondarySection" 
+                    value={form.lightSecondarySection} 
+                    onChange={val => setForm({ ...form, lightSecondarySection: val })} 
                 />
             </div>
 
@@ -122,10 +164,10 @@ const ThemeManager = ({ data, onSave, password }) => {
                         <FaRocket />
                     </div>
                     <div>
-                        <h4 className="font-bold text-white mb-1">Atmospheric Synchronization</h4>
-                        <p className="text-description text-sm leading-relaxed max-w-2xl">
-                            All adjustments made here will harmonize across your entire platform instantly.
-                            Ensure high contrast ratios for readability and a premium professional feel.
+                        <h4 className="font-bold text-white mb-1 uppercase tracking-tight italic text-lg">Bi-Mode Synchronization Matrix</h4>
+                        <p className="text-description text-sm leading-relaxed max-w-3xl">
+                            All configurations here are live and synchronized across every visitor's device instantly. 
+                            Users can switch between Dark and Light experiences; please ensure contrast ratios represent a high level of professionalism.
                         </p>
                     </div>
                 </div>
@@ -134,19 +176,19 @@ const ThemeManager = ({ data, onSave, password }) => {
             <div className="flex justify-end pt-4">
                 <button
                     disabled={saving}
-                    className="group relative bg-primary hover:bg-orange-600 text-white px-12 py-5 rounded-2xl font-black text-lg transition-all duration-500 hover:shadow-[0_20px_50px_rgba(249,115,22,0.4)] disabled:opacity-50 cursor-pointer overflow-hidden"
+                    className="group relative bg-primary hover:bg-orange-600 text-white px-12 py-5 rounded-2xl font-black text-lg transition-all duration-500 hover:shadow-[0_20px_50px_rgba(249,115,22,0.4)] disabled:opacity-50 cursor-pointer overflow-hidden border-0"
                 >
                     <div className="relative z-10 flex items-center gap-3">
                         {saving ? (
                             <>
                                 <FaSpinner className="animate-spin" />
-                                <span>REMASTERING...</span>
+                                <span>COMMITTING UNITY...</span>
                             </>
                         ) : (
-                            <span>APPLY IDENTITY CHANGES</span>
+                            <span>APPLY ALL IDENTITY CHANGES</span>
                         )}
                     </div>
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                    <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                 </button>
             </div>
         </form>

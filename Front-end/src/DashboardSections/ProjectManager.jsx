@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Cropper from 'react-easy-crop';
 import getCroppedImg from '../utils/getCroppedImg';
-import { FaPlus, FaEdit, FaTrash, FaUpload, FaLink, FaGithub, FaCode, FaTimes, FaSpinner, FaChevronLeft, FaBriefcase, FaCropAlt } from 'react-icons/fa';
+import { FaPlus, FaTrash, FaUpload, FaLink, FaGithub, FaCode, FaTimes, FaSpinner, FaChevronLeft, FaBriefcase, FaCropAlt } from 'react-icons/fa';
 import { deleteProject, createProject, updateProject } from '../api/projectApi';
 import Toast from '../components/Toast';
 import Modal from './Modal';
+import DashboardProjectCard from './DashboardProjectCard';
 
 const ProjectManager = ({ projects, onSave, password }) => {
     const [isEditing, setIsEditing] = useState(false);
@@ -35,6 +36,7 @@ const ProjectManager = ({ projects, onSave, password }) => {
             await deleteProject(id, password);
             setToast({ show: true, message: "Project deleted successfully", type: 'success' });
             await onSave();
+            setModal({ ...modal, show: false });
         } catch (e) {
             setToast({ show: true, message: e.message, type: 'error' });
         }
@@ -284,7 +286,7 @@ const ProjectManager = ({ projects, onSave, password }) => {
                                     {errors.title && <span className="text-[10px] text-red-500 font-bold uppercase">{errors.title}</span>}
                                 </div>
                                 <input
-                                    className={`w-full bg-black/40 border ${errors.title ? 'border-red-500/50' : 'border-white/10'} p-4 rounded-2xl focus:border-primary/50 focus:outline-none transition text-white font-medium`}
+                                    className={`w-full bg-section-primary/20 border ${errors.title ? 'border-red-500/50' : 'border-white/5'} p-4 rounded-2xl focus:border-primary/40 focus:ring-4 focus:ring-primary/5 focus:outline-none transition-all text-headline font-bold duration-500 placeholder:text-description/30 shadow-inner`}
                                     value={form.title}
                                     onChange={e => { setForm({ ...form, title: e.target.value }); if (errors.title) setErrors({ ...errors, title: null }) }}
                                     placeholder="e.g. E-Commerce Vanguard"
@@ -297,7 +299,7 @@ const ProjectManager = ({ projects, onSave, password }) => {
                                     {errors.description && <span className="text-[10px] text-red-500 font-bold uppercase">{errors.description}</span>}
                                 </div>
                                 <textarea
-                                    className={`w-full bg-black/40 border ${errors.description ? 'border-red-500/50' : 'border-white/10'} p-4 rounded-2xl h-40 focus:border-primary/50 focus:outline-none transition text-white resize-none leading-relaxed`}
+                                    className={`w-full bg-section-primary/20 border ${errors.description ? 'border-red-500/50' : 'border-white/5'} p-4 rounded-2xl h-40 focus:border-primary/40 focus:ring-4 focus:ring-primary/5 focus:outline-none transition-all text-headline font-bold duration-500 placeholder:text-description/30 shadow-inner resize-none leading-relaxed`}
                                     value={form.description}
                                     onChange={e => { setForm({ ...form, description: e.target.value }); if (errors.description) setErrors({ ...errors, description: null }) }}
                                     placeholder="Describe the mission, challenges, and triumph of this project..."
@@ -414,45 +416,21 @@ const ProjectManager = ({ projects, onSave, password }) => {
                     <button onClick={handleNewProject} className="text-primary hover:underline mt-2 font-bold cursor-pointer">Start by adding your first project</button>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 gap-8 max-w-6xl mx-auto">
                     {projects.map(p => (
-                        <div key={p._id} className="group relative bg-black/40 rounded-[2.5rem] border border-white/5 hover:border-primary/30 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden">
-                            {/* Actions - Top Floating */}
-                            <div className="absolute top-4 right-4 flex gap-2 z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
-                                <button
-                                    onClick={() => handleEdit(p)}
-                                    className="w-10 h-10 bg-blue-500/20 backdrop-blur-md text-blue-400 hover:bg-blue-500 hover:text-white rounded-xl transition duration-300 cursor-pointer shadow-lg flex items-center justify-center border border-blue-500/20"
-                                >
-                                    <FaEdit size={14} />
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        setModal({
-                                            show: true,
-                                            title: "Erase Project",
-                                            message: `Are you sure you want to permanently delete "${p.title}"? This action cannot be undone.`,
-                                            onConfirm: () => handleDeleteProject(p._id)
-                                        });
-                                    }}
-                                    className="w-10 h-10 bg-red-500/20 backdrop-blur-md text-red-500 hover:bg-red-500 hover:text-white rounded-xl transition duration-300 cursor-pointer shadow-lg flex items-center justify-center border border-red-500/20"
-                                >
-                                    <FaTrash size={14} />
-                                </button>
-                            </div>
-
-                            {/* Image Container */}
-                            <div className="aspect-16/10 overflow-hidden relative">
-                                <img src={p.image} className="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="" />
-                                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
-                            </div>
-
-                            {/* Content */}
-                            <div className="p-6 text-center">
-                                <h4 className="font-bold text-lg text-white group-hover:text-primary transition-colors tracking-tight uppercase">
-                                    {p.title}
-                                </h4>
-                            </div>
-                        </div>
+                        <DashboardProjectCard 
+                            key={p._id} 
+                            project={p} 
+                            onEdit={handleEdit}
+                            onDelete={(project) => {
+                                setModal({
+                                    show: true,
+                                    title: "Erase Project",
+                                    message: `Are you sure you want to permanently delete "${project.title}"? This action cannot be undone.`,
+                                    onConfirm: () => handleDeleteProject(project._id)
+                                });
+                            }}
+                        />
                     ))}
                 </div>
             )}

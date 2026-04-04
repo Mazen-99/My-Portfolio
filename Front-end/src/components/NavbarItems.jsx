@@ -26,7 +26,7 @@ const NavbarItems = ({ isMobile, onItemClick, activeSection }) => {
                     offset={-70}
                     duration={500}
                     onClick={() => onItemClick && onItemClick()}
-                    className={`cursor-pointer text-lg font-medium transition duration-300 hover:text-primary ${activeSection === link.to ? "text-primary border-b-2 border-primary" : "text-white"
+                    className={`cursor-pointer text-lg font-medium transition duration-300 ${activeSection === link.to ? "text-primary border-b-2 border-primary" : "text-headline/60 hover:text-primary"
                         }`}
                 >
                     {link.label}

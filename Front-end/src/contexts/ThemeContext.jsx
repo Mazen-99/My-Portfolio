@@ -1,44 +1,100 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { getTheme } from '../api/themeApi';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState(null);
-  const [loading, setLoading] = useState(true);
+    const [theme, setTheme] = useState(null);
+    const [mode, setMode] = useState(localStorage.getItem('themeMode') || 'dark');
+    const [loading, setLoading] = useState(true);
+    const [isTransitioning, setIsTransitioning] = useState(false);
+    const modeRef = useRef(mode);
 
-  useEffect(() => {
-    const fetchTheme = async () => {
-      try {
-        const data = await getTheme();
-        setTheme(data);
-        if (data) {
-          if (data.primary) document.documentElement.style.setProperty('--primary-color', data.primary);
-          if (data.headline) document.documentElement.style.setProperty('--headline-color', data.headline);
-          if (data.description) document.documentElement.style.setProperty('--description-color', data.description);
-          if (data.primarySection) document.documentElement.style.setProperty('--primary-section-color', data.primarySection);
-          if (data.secondarySection) document.documentElement.style.setProperty('--secondary-section-color', data.secondarySection);
+    // Keep modeRef updated for interval access
+    useEffect(() => {
+        modeRef.current = mode;
+    }, [mode]);
+
+    const applyTheme = (data, currentMode) => {
+        if (!data) return;
+        const root = document.documentElement;
+
+        // Apply shared primary color
+        if (data.primary) root.style.setProperty('--primary-color', data.primary);
+        if (data.description) root.style.setProperty('--description-color', data.description);
+
+        if (currentMode === 'dark') {
+            // Apply Dark-specific values
+            if (data.darkHeadline) root.style.setProperty('--headline-color', data.darkHeadline);
+            if (data.darkPrimarySection) root.style.setProperty('--primary-section-color', data.darkPrimarySection);
+            if (data.darkSecondarySection) root.style.setProperty('--secondary-section-color', data.darkSecondarySection);
+            root.classList.add('dark');
+            root.classList.remove('light');
+        } else {
+            // Apply Light-specific values
+            if (data.lightHeadline) root.style.setProperty('--headline-color', data.lightHeadline);
+            if (data.lightPrimarySection) root.style.setProperty('--primary-section-color', data.lightPrimarySection);
+            if (data.lightSecondarySection) root.style.setProperty('--secondary-section-color', data.lightSecondarySection);
+            root.classList.add('light');
+            root.classList.remove('dark');
         }
-      } catch (error) {
-        console.error('Error fetching theme:', error);
-      } finally {
-        setLoading(false);
-      }
     };
 
-    fetchTheme(); // جلب البيانات أول مرة
+    const fetchTheme = async () => {
+        try {
+            const data = await getTheme();
+            setTheme(data);
+            applyTheme(data, modeRef.current);
+        } catch (error) {
+            console.error('Error getting theme:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    // إعداد التحديث اللحظي كل 3 ثوانٍ
-    const interval = setInterval(fetchTheme, 3000);
+    useEffect(() => {
+        fetchTheme();
+        const interval = setInterval(fetchTheme, 3000);
+        return () => clearInterval(interval);
+    }, []);
 
-    return () => clearInterval(interval); // تنظيف الـ Interval عند إغلاق المكون
-  }, []);
+    const toggleTheme = (e) => {
+        if (e) e.preventDefault();
+        
+        setIsTransitioning(true);
+        const newMode = mode === 'dark' ? 'light' : 'dark';
+        
+        setTimeout(() => {
+            setMode(newMode);
+            localStorage.setItem('themeMode', newMode);
+            applyTheme(theme, newMode);
+        }, 50);
 
-  return (
-    <ThemeContext.Provider value={{ theme, loading }}>
-      {children}
-    </ThemeContext.Provider>
-  );
+        setTimeout(() => setIsTransitioning(false), 800);
+    };
+
+    return (
+        <ThemeContext.Provider value={{ theme, mode, toggleTheme, loading }}>
+            {children}
+            <AnimatePresence>
+                {isTransitioning && (
+                    <motion.div
+                        initial={{ clipPath: 'circle(0% at 0% 0%)' }}
+                        animate={{ clipPath: 'circle(150% at 0% 0%)' }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.8, ease: "easeInOut" }}
+                        className="fixed inset-0 z-1000000 pointer-events-none"
+                        style={{
+                            backgroundColor: mode === 'dark' 
+                                ? (theme?.lightPrimarySection || '#f8fafc') 
+                                : (theme?.darkPrimarySection || '#0f172a')
+                        }}
+                    />
+                )}
+            </AnimatePresence>
+        </ThemeContext.Provider>
+    );
 };
 
 export const useTheme = () => useContext(ThemeContext);

@@ -7,7 +7,7 @@ const ServerError = () => {
     };
 
     return (
-        <div className="fixed inset-0 bg-[#050505] z-[999999] flex flex-col items-center justify-center p-6">
+        <div className="fixed inset-0 bg-[#050505] z-999999 flex flex-col items-center justify-center p-6">
             {/* Background Glow */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-red-500/5 rounded-full blur-[150px]"></div>
 
@@ -37,16 +37,27 @@ const ServerError = () => {
 
                 {/* Counter-Action */}
                 <div className="flex flex-col items-center gap-6">
-                    <button
-                        onClick={handleRetry}
-                        className="group relative bg-white/5 hover:bg-white/10 border border-white/10 text-white px-10 py-5 rounded-[2rem] font-bold transition-all duration-500 flex items-center gap-3 cursor-pointer"
-                    >
-                        <FaRedo className="group-hover:rotate-180 transition-transform duration-700 text-red-500" />
-                        ATTEMPT RECONNECTION
-                    </button>
+                    <div className="flex flex-col md:flex-row gap-4 w-full justify-center">
+                        <button
+                            onClick={handleRetry}
+                            className="group relative bg-white/5 hover:bg-white/10 border border-white/10 text-white px-8 py-4 rounded-2xl font-bold transition-all duration-300 flex items-center justify-center gap-3 cursor-pointer shadow-xl"
+                        >
+                            <FaRedo className="group-hover:rotate-180 transition-transform duration-700 text-red-500" />
+                            RETRY CONNECTION
+                        </button>
 
-                    <p className="text-[10px] text-gray-600 font-bold uppercase tracking-[0.5em]">
-                        Error Code: 503_SERVER_TIMEOUT
+                        <a
+                            href="https://wa.me/+201118301578"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-red-500 hover:bg-red-600 text-white px-8 py-4 rounded-2xl font-bold transition-all duration-300 flex items-center justify-center gap-3 shadow-lg shadow-red-500/20"
+                        >
+                            CONTACT DEVELOPER
+                        </a>
+                    </div>
+
+                    <p className="text-[10px] text-gray-600 font-bold uppercase tracking-[0.5em] pt-4">
+                        Status: 503 Service Unavailable
                     </p>
                 </div>
             </div>

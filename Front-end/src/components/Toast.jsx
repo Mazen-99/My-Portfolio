@@ -12,7 +12,7 @@ const Toast = ({ message, type, onClose }) => {
     const isSuccess = type === 'success';
 
     return (
-        <div className={`fixed top-12 left-1/2 -translate-x-1/2 z-[999999] flex items-center gap-4 px-6 py-4 rounded-2xl border shadow-2xl animate-in fade-in slide-in-from-top-12 duration-500 max-w-[90%] w-auto min-w-[320px] ${isSuccess
+        <div className={`fixed top-12 left-1/2 -translate-x-1/2 z-999999 flex items-center gap-4 px-6 py-4 rounded-2xl border shadow-2xl animate-in fade-in slide-in-from-top-12 duration-500 max-w-[90%] w-auto min-w-[320px] ${isSuccess
             ? 'bg-[#0f172a]/95 backdrop-blur-md border-green-500/20 text-green-400'
             : 'bg-[#0f172a]/95 backdrop-blur-md border-red-500/20 text-red-400'
             }`}>

@@ -123,7 +123,7 @@ const ContactSection = () => {
     }, [])
 
     return (
-        <section id='contact' className='min-h-screen bg-section-secondary text-white flex flex-col items-center pt-15 pb-15 relative'>
+        <section id='contact' className='min-h-screen bg-section-secondary text-headline flex flex-col items-center pt-15 pb-15 relative'>
             <div className='container mx-auto px-4 md:px-8 w-full'>
                 <div className='text-center mb-16'>
                     <h2 className='text-4xl lg:text-5xl font-bold mb-4'>
@@ -137,7 +137,7 @@ const ContactSection = () => {
                 <div className='grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-5xl mx-auto'>
                     {/* Contact Info */}
                     <div>
-                        <h3 className='text-2xl font-bold mb-8'>Contact Information</h3>
+                        <h3 className='text-2xl font-bold mb-8 text-headline'>Contact Information</h3>
 
                         <div className='space-y-6'>
                             <div className='flex items-start gap-4'>
@@ -145,7 +145,7 @@ const ContactSection = () => {
                                     <FaPhone size={24} />
                                 </div>
                                 <div>
-                                    <h4 className='font-semibold text-lg mb-1'>Phone</h4>
+                                    <h4 className='font-semibold text-lg mb-1 text-headline'>Phone</h4>
                                     <p className='text-description'>{contactInfo.phone || 'NAN'}</p>
                                 </div>
                             </div>
@@ -155,7 +155,7 @@ const ContactSection = () => {
                                     <FaEnvelope size={24} />
                                 </div>
                                 <div>
-                                    <h4 className='font-semibold text-lg mb-1'>Email</h4>
+                                    <h4 className='font-semibold text-lg mb-1 text-headline'>Email</h4>
                                     <p className='text-description'>{contactInfo.email || 'NAN'}</p>
                                 </div>
                             </div>
@@ -165,7 +165,7 @@ const ContactSection = () => {
                                     <FaMapMarkerAlt size={24} />
                                 </div>
                                 <div>
-                                    <h4 className='font-semibold text-lg mb-1'>Location</h4>
+                                    <h4 className='font-semibold text-lg mb-1 text-headline'>Location</h4>
                                     <p className='text-description'>Giza, Egypt</p>
                                 </div>
                             </div>
@@ -177,7 +177,7 @@ const ContactSection = () => {
                         <form onSubmit={handleInitialSubmit} className='space-y-6'>
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center px-1">
-                                    <label className='block text-xs font-bold text-gray-400 uppercase tracking-widest'>Name</label>
+                                    <label className='block text-xs font-bold text-description uppercase tracking-widest'>Name</label>
                                     {errors.name && <span className="text-[10px] text-red-500 font-bold uppercase animate-pulse">{errors.name}</span>}
                                 </div>
                                 <input
@@ -186,13 +186,13 @@ const ContactSection = () => {
                                     value={formData.name}
                                     onChange={handleChange}
                                     placeholder='Your name'
-                                    className={`w-full px-4 py-4 bg-section-primary border ${errors.name ? 'border-red-500/50' : 'border-slate-700'} rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-primary transition duration-300 shadow-inner`}
+                                    className={`w-full px-4 py-4 bg-section-primary border ${errors.name ? 'border-red-500/50' : 'border-slate-700'} rounded-xl text-headline placeholder-slate-500 focus:outline-none focus:border-primary transition duration-300 shadow-inner`}
                                 />
                             </div>
 
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center px-1">
-                                    <label className='block text-xs font-bold text-gray-400 uppercase tracking-widest'>Email</label>
+                                    <label className='block text-xs font-bold text-description uppercase tracking-widest'>Email</label>
                                     {errors.email && <span className="text-[10px] text-red-500 font-bold uppercase animate-pulse">{errors.email}</span>}
                                 </div>
                                 <input
@@ -201,13 +201,13 @@ const ContactSection = () => {
                                     value={formData.email}
                                     onChange={handleChange}
                                     placeholder='your@email.com'
-                                    className={`w-full px-4 py-4 bg-section-primary border ${errors.email ? 'border-red-500/50' : 'border-slate-700'} rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-primary transition duration-300 shadow-inner`}
+                                    className={`w-full px-4 py-4 bg-section-primary border ${errors.email ? 'border-red-500/50' : 'border-slate-700'} rounded-xl text-headline placeholder-slate-500 focus:outline-none focus:border-primary transition duration-300 shadow-inner`}
                                 />
                             </div>
 
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center px-1">
-                                    <label className='block text-xs font-bold text-gray-400 uppercase tracking-widest'>Message</label>
+                                    <label className='block text-xs font-bold text-description uppercase tracking-widest'>Message</label>
                                     {errors.message && <span className="text-[10px] text-red-500 font-bold uppercase animate-pulse">{errors.message}</span>}
                                 </div>
                                 <textarea
@@ -216,7 +216,7 @@ const ContactSection = () => {
                                     onChange={handleChange}
                                     placeholder='Your message here...'
                                     rows='5'
-                                    className={`w-full px-4 py-4 bg-section-primary border ${errors.message ? 'border-red-500/50' : 'border-slate-700'} rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-primary transition duration-300 shadow-inner resize-none`}
+                                    className={`w-full px-4 py-4 bg-section-primary border ${errors.message ? 'border-red-500/50' : 'border-slate-700'} rounded-xl text-headline placeholder-slate-500 focus:outline-none focus:border-primary transition duration-300 shadow-inner resize-none`}
                                 ></textarea>
                             </div>
 
@@ -233,8 +233,8 @@ const ContactSection = () => {
 
             {/* Confirmation Modal */}
             {showConfirmModal && (
-                <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[100] p-4 backdrop-blur-sm">
-                    <div className="bg-section-primary p-8 rounded-2xl border border-slate-700 max-w-md w-full shadow-2xl">
+                <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-100 p-4 backdrop-blur-sm">
+                    <div className="bg-section-primary p-8 rounded-2xl border border-slate-700 max-w-md w-full shadow-2xl text-headline">
                         <h3 className="text-2xl font-bold mb-4">Confirm Your Email</h3>
                         <p className="text-description mb-6">
                             Is <span className="text-primary font-semibold">{formData.email}</span> correct?
@@ -261,8 +261,8 @@ const ContactSection = () => {
 
             {/* OTP Modal */}
             {showOtpModal && (
-                <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[100] p-4 backdrop-blur-sm">
-                    <div className="bg-section-primary p-8 rounded-2xl border border-slate-700 max-w-md w-full shadow-2xl">
+                <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-100 p-4 backdrop-blur-sm">
+                    <div className="bg-section-primary p-8 rounded-2xl border border-slate-700 max-w-md w-full shadow-2xl text-headline">
                         <h3 className="text-2xl font-bold mb-2">Verify Email</h3>
                         <p className="text-description mb-6">Enter the 6-digit code sent to your email.</p>
                         <form onSubmit={handleVerifyAndSend}>
@@ -272,7 +272,7 @@ const ContactSection = () => {
                                 value={otp}
                                 onChange={(e) => setOtp(e.target.value)}
                                 placeholder="000000"
-                                className="w-full text-center text-3xl tracking-[10px] font-bold py-4 bg-section-secondary border border-slate-700 rounded-xl mb-6 focus:border-primary focus:outline-none"
+                                className="w-full text-center text-3xl tracking-[10px] font-bold py-4 bg-section-secondary border border-slate-700 rounded-xl mb-6 focus:border-primary focus:outline-none text-headline"
                                 required
                             />
                             <div className="flex gap-4">
@@ -298,12 +298,12 @@ const ContactSection = () => {
 
             {/* Global Toasts */}
             {submitStatus && (
-                <div className='fixed bottom-6 right-6 p-4 bg-green-500 text-white rounded-lg shadow-lg z-[200] animate-bounce'>
+                <div className='fixed bottom-6 right-6 p-4 bg-green-500 text-white rounded-lg shadow-lg z-200 animate-bounce'>
                     {submitStatus}
                 </div>
             )}
             {submitError && (
-                <div className='fixed bottom-6 right-6 p-4 bg-red-500 text-white rounded-lg shadow-lg z-[200]'>
+                <div className='fixed bottom-6 right-6 p-4 bg-red-500 text-white rounded-lg shadow-lg z-200'>
                     {submitError}
                 </div>
             )}

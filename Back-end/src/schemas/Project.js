@@ -16,6 +16,10 @@ const ProjectSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    cloudinary_id: {
+      type: String,
+      required: false,
+    },
     liveUrl: {
       type: String,
       default: '',

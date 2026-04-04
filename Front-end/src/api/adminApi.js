@@ -1,31 +1,74 @@
-import API_URL from './config';
+import axios from 'axios';
 
-// Check admin password
-// Backend expects the password in the `x-admin-password` header
-export const checkAdmin = async (password) => {
+const API_URL = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/admin`;
+
+/**
+ * Check if admin is authorized using the specialized 'x-admin-password' header.
+ */
+export const checkAdminAuth = async (password) => {
   try {
-    const response = await fetch(`${API_URL}/admin/check`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-admin-password': password,
-      },
-      // No body required by backend; authentication is header-based
+    const response = await axios.post(`${API_URL}/check`, {}, {
+      headers: { 'x-admin-password': password }
     });
-
-    // If response is not OK, read the error message and throw
-    if (!response.ok) {
-      const err = await response.json().catch(() => ({}));
-      const message = err && err.message ? err.message : 'Unauthorized';
-      const error = new Error(message);
-      error.status = response.status;
-      throw error;
-    }
-
-    const data = await response.json();
-    return data;
+    return response.status === 200;
   } catch (error) {
-    console.error('Error checking admin password:', error);
+    return false;
+  }
+};
+
+/**
+ * Track a visitor on landing (Public endpoint)
+ */
+export const trackVisit = async () => {
+  try {
+    const response = await axios.post(`${API_URL}/track-visit`);
+    return response.data;
+  } catch (error) {
+    console.error('Track visit error:', error);
+  }
+};
+
+/**
+ * Get visitor analytics (Admin only)
+ */
+export const getVisitors = async (password) => {
+  try {
+    const response = await axios.get(`${API_URL}/visitors`, {
+      headers: { 'x-admin-password': password }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Get visitors error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Delete a single visitor log entry
+ */
+export const deleteVisitor = async (id, password) => {
+  try {
+    const response = await axios.delete(`${API_URL}/visitors/${id}`, {
+      headers: { 'x-admin-password': password }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Delete visitor error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Clear the entire visitor log history
+ */
+export const deleteAllVisitors = async (password) => {
+  try {
+    const response = await axios.delete(`${API_URL}/visitors`, {
+      headers: { 'x-admin-password': password }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Clear visitors history error:', error);
     throw error;
   }
 };

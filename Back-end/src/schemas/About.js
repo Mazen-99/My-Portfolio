@@ -9,6 +9,10 @@ const skillSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  category: {
+    type: String,
+    required: true,
+  },
 })
 
 const AboutSchema = new mongoose.Schema({
@@ -39,6 +43,9 @@ const AboutSchema = new mongoose.Schema({
   skills: {
     type: [skillSchema],
     default: [],
+  },
+  skillCategories: {
+    type: [String],
   },
   cv: {
     type: String,

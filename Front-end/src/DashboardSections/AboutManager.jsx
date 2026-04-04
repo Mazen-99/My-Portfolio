@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { updateAbout } from '../api/aboutApi';
 import { uploadCV, deleteCV } from '../api/cvApi';
-import { FaPlus, FaTrash, FaUpload, FaFilePdf, FaUser, FaPhone, FaEnvelope, FaBriefcase, FaCode, FaSpinner, FaWhatsapp, FaLinkedin, FaFacebook, FaGithub, FaGlobe } from 'react-icons/fa';
+import { FaPlus, FaTrash, FaUpload, FaFilePdf, FaUser, FaPhone, FaEnvelope, FaBriefcase, FaCode, FaSpinner, FaWhatsapp, FaLinkedin, FaFacebook, FaGithub, FaGlobe, FaLink } from 'react-icons/fa';
 
 import Toast from '../components/Toast';
 import Modal from './Modal';
+import DynamicIcon from '../components/DynamicIcon';
 
 const AboutManager = ({ data, onSave, password }) => {
     const [form, setForm] = useState({
@@ -14,7 +15,8 @@ const AboutManager = ({ data, onSave, password }) => {
         titles: [''],
         bio: '',
         description: '',
-        skills: [{ name: '', icon: '' }],
+        skills: [{ name: '', icon: '', category: '' }],
+        skillCategories: ['Front-end', 'Back-end', 'Tools'],
         cv: null,
         socials: {
             whatsapp: '',
@@ -24,6 +26,7 @@ const AboutManager = ({ data, onSave, password }) => {
         },
         ...data
     });
+    const [newCategory, setNewCategory] = useState('');
     const [errors, setErrors] = useState({});
     const [saving, setSaving] = useState(false);
     const [cvLoading, setCvLoading] = useState(false);
@@ -38,7 +41,8 @@ const AboutManager = ({ data, onSave, password }) => {
             setForm({
                 ...data,
                 titles: data.titles?.length ? data.titles : [''],
-                skills: data.skills?.length ? data.skills : [{ name: '', icon: '' }],
+                skills: data.skills?.length ? data.skills : [{ name: '', icon: '', category: '' }],
+                skillCategories: data.skillCategories?.length ? data.skillCategories : ['Front-end', 'Back-end', 'Tools'],
                 socials: data.socials || {
                     whatsapp: '',
                     linkedin: '',
@@ -61,11 +65,36 @@ const AboutManager = ({ data, onSave, password }) => {
         const validTitles = form.titles.filter(t => t.trim() !== '');
         if (validTitles.length === 0) newErrors.titles = "At least one valid title is required";
 
-        const validSkills = form.skills.filter(s => s.name.trim() !== '' && s.icon.trim() !== '');
-        if (validSkills.length === 0) newErrors.skills = "At least one skill with name and icon is required";
+        const validSkills = form.skills.filter(s => s.name.trim() !== '' && s.icon.trim() !== '' && s.category.trim() !== '');
+        if (validSkills.length === 0) newErrors.skills = "At least one complete skill is required";
+
+        if (!form.skillCategories || form.skillCategories.length === 0) {
+            newErrors.skillCategories = "At least one category is required";
+        }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
+    };
+
+    // Category Handling
+    const addCategory = () => {
+        if (!newCategory.trim()) return;
+        if (form.skillCategories.includes(newCategory.trim())) {
+            setToast({ show: true, message: "Category already exists", type: 'error' });
+            return;
+        }
+        setForm({ ...form, skillCategories: [...form.skillCategories, newCategory.trim()] });
+        setNewCategory('');
+    };
+
+    const removeCategory = (cat) => {
+        // Check if any skill uses this category
+        const isUsed = form.skills.some(s => s.category === cat);
+        if (isUsed) {
+            setToast({ show: true, message: "Cannot delete category being used by skills", type: 'error' });
+            return;
+        }
+        setForm({ ...form, skillCategories: form.skillCategories.filter(c => c !== cat) });
     };
 
     // CV Handling
@@ -133,10 +162,14 @@ const AboutManager = ({ data, onSave, password }) => {
         if (errors.skills) setErrors({ ...errors, skills: null });
     };
 
-    const addSkill = () => setForm({ ...form, skills: [...form.skills, { name: '', icon: '' }] });
+    const addSkill = () => {
+        const defaultCat = form.skillCategories[0] || '';
+        setForm({ ...form, skills: [...form.skills, { name: '', icon: '', category: defaultCat }] });
+    };
     const removeSkill = (index) => {
         const newSkills = form.skills.filter((_, i) => i !== index);
-        setForm({ ...form, skills: newSkills.length ? newSkills : [{ name: '', icon: '' }] });
+        const defaultCat = form.skillCategories[0] || '';
+        setForm({ ...form, skills: newSkills.length ? newSkills : [{ name: '', icon: '', category: defaultCat }] });
     };
 
     const handleSave = async (e) => {
@@ -152,7 +185,7 @@ const AboutManager = ({ data, onSave, password }) => {
             const cleanedForm = {
                 ...form,
                 titles: form.titles.filter(t => t.trim() !== ''),
-                skills: form.skills.filter(s => s.name.trim() !== '' && s.icon.trim() !== '')
+                skills: form.skills.filter(s => s.name.trim() !== '' && s.icon.trim() !== '' && s.category.trim() !== '')
             };
             await updateAbout(cleanedForm, password);
             await onSave();
@@ -175,10 +208,10 @@ const AboutManager = ({ data, onSave, password }) => {
             )}
 
             {/* 1. CV Section */}
-            <div className="bg-white/5 p-6 rounded-3xl border border-white/10 space-y-4">
+            <div className="bg-section-secondary/40 p-6 rounded-3xl border border-white/10 space-y-4 transition-colors duration-500">
                 <div className="flex items-center justify-between">
-                    <label className="text-sm font-bold text-primary uppercase tracking-widest flex items-center gap-2">
-                        <FaFilePdf /> Curriculum Vitae (CV)
+                    <label className="text-sm font-black text-primary uppercase tracking-[0.2em] flex items-center gap-2">
+                        <FaFilePdf /> CURRICULUM VITAE (CV)
                     </label>
                     {form.cv && (
                         <button
@@ -213,13 +246,23 @@ const AboutManager = ({ data, onSave, password }) => {
                         </div>
                     </div>
                 ) : (
-                    <div className="flex items-center gap-4 bg-green-500/10 p-4 rounded-2xl border border-green-500/20">
+                    <div className="flex items-center gap-4 bg-green-500/10 p-4 rounded-2xl border border-green-500/20 transition-colors duration-500">
                         <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center text-white text-xl shadow-[0_0_15px_rgba(34,197,94,0.3)]">
                             <FaFilePdf />
                         </div>
-                        <div className="flex-1">
-                            <p className="text-white font-medium text-sm">CV Globally Available</p>
-                            <p className="text-gray-400 text-xs truncate max-w-[200px] md:max-w-md">{form.cv}</p>
+                        <div className="flex-1 overflow-hidden">
+                            <div className="flex items-center justify-between mb-1">
+                                <p className="text-headline font-black text-sm uppercase tracking-tighter">CV GLOBALLY AVAILABLE</p>
+                                <a 
+                                    href={`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/cv`} 
+                                    target="_blank" 
+                                    rel="noreferrer" 
+                                    className="text-[10px] text-primary hover:underline font-black uppercase tracking-widest flex items-center gap-1"
+                                >
+                                    Test Link <FaLink size={8} />
+                                </a>
+                            </div>
+                            <p className="text-description text-[10px] truncate max-w-full opacity-60 font-mono italic">{form.cv}</p>
                         </div>
                     </div>
                 )}
@@ -236,7 +279,7 @@ const AboutManager = ({ data, onSave, password }) => {
                             {errors.name && <span className="text-[10px] text-red-500 font-bold uppercase">{errors.name}</span>}
                         </div>
                         <input
-                            className={`w-full bg-black/40 border ${errors.name ? 'border-red-500/50' : 'border-white/10'} p-4 rounded-2xl focus:border-primary/50 focus:outline-none transition text-white`}
+                            className={`w-full bg-section-primary/20 border ${errors.name ? 'border-red-500/50' : 'border-white/5'} p-4 rounded-2xl focus:border-primary/40 focus:ring-4 focus:ring-primary/5 focus:outline-none transition-all text-headline font-bold duration-500 placeholder:text-description/30 shadow-inner`}
                             value={form.name || ''}
                             onChange={e => { setForm({ ...form, name: e.target.value }); if (errors.name) setErrors({ ...errors, name: null }) }}
                             placeholder="e.g. Mahmoud Zaki"
@@ -252,7 +295,7 @@ const AboutManager = ({ data, onSave, password }) => {
                                 {errors.phone && <span className="text-[10px] text-red-500 font-bold uppercase">{errors.phone}</span>}
                             </div>
                             <input
-                                className={`w-full bg-black/40 border ${errors.phone ? 'border-red-500/50' : 'border-white/10'} p-4 rounded-2xl focus:border-primary/50 focus:outline-none transition text-white text-sm`}
+                                className={`w-full bg-section-secondary/30 border ${errors.phone ? 'border-red-500/50' : 'border-white/10'} p-4 rounded-2xl focus:border-primary/50 focus:outline-none transition text-headline text-sm duration-500`}
                                 value={form.phone || ''}
                                 onChange={e => { setForm({ ...form, phone: e.target.value }); if (errors.phone) setErrors({ ...errors, phone: null }) }}
                                 placeholder="+20 100..."
@@ -266,7 +309,7 @@ const AboutManager = ({ data, onSave, password }) => {
                                 {errors.email && <span className="text-[10px] text-red-500 font-bold uppercase">{errors.email}</span>}
                             </div>
                             <input
-                                className={`w-full bg-black/40 border ${errors.email ? 'border-red-500/50' : 'border-white/10'} p-4 rounded-2xl focus:border-primary/50 focus:outline-none transition text-white text-sm`}
+                                className={`w-full bg-section-primary/20 border ${errors.email ? 'border-red-500/50' : 'border-white/5'} p-4 rounded-2xl focus:border-primary/40 focus:ring-4 focus:ring-primary/5 focus:outline-none transition-all text-headline text-sm font-bold duration-500 placeholder:text-description/30 shadow-inner`}
                                 value={form.email || ''}
                                 onChange={e => { setForm({ ...form, email: e.target.value }); if (errors.email) setErrors({ ...errors, email: null }) }}
                                 placeholder="hello@example.com"
@@ -388,39 +431,108 @@ const AboutManager = ({ data, onSave, password }) => {
             </div>
 
             {/* 6. Skills Section */}
-            <div className="space-y-6">
+            <div className="space-y-8">
                 <div className="flex items-center justify-between ml-1">
                     <label className="text-xs font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2">
-                        <FaCode /> Core Technology Skills
+                        <FaCode /> Professional Skill Architecture
                     </label>
                     {errors.skills && <span className="text-[10px] text-red-500 font-bold uppercase">{errors.skills}</span>}
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {form.skills.map((skill, index) => (
-                        <div key={index} className={`bg-black/20 border ${errors.skills ? 'border-red-500/50' : 'border-white/5'} p-4 rounded-2xl space-y-3 relative group`}>
-                            <input
-                                className="w-full bg-black/40 border border-white/10 p-2 rounded-xl focus:border-primary/50 focus:outline-none transition text-white text-xs"
-                                value={skill.name}
-                                onChange={e => handleSkillChange(index, 'name', e.target.value)}
-                                placeholder="Skill Name (e.g. React)"
-                            />
-                            <input
-                                className="w-full bg-black/40 border border-white/10 p-2 rounded-xl focus:border-primary/50 focus:outline-none transition text-white text-xs"
-                                value={skill.icon}
-                                onChange={e => handleSkillChange(index, 'icon', e.target.value)}
-                                placeholder="Icon Name (FontAwesome)"
-                            />
-                            {form.skills.length > 1 && (
-                                <button type="button" onClick={() => removeSkill(index)} className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow-lg cursor-pointer">
+                {/* Categories Management Area */}
+                <div className="bg-white/5 border border-white/10 p-6 rounded-3xl space-y-4">
+                    <div className="flex justify-between items-center px-1">
+                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Manage Categories (Sections)</label>
+                        {errors.skillCategories && <span className="text-[10px] text-red-500 font-bold uppercase">{errors.skillCategories}</span>}
+                    </div>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                        {form.skillCategories.map(cat => (
+                            <span key={cat} className="bg-primary/20 text-primary px-3 py-1.5 rounded-xl border border-primary/30 text-xs font-bold flex items-center gap-2 group/cat transition-all duration-300">
+                                {cat}
+                                <button 
+                                    type="button" 
+                                    onClick={() => removeCategory(cat)}
+                                    className="hover:text-red-500 transition-colors cursor-pointer"
+                                    title={`Delete ${cat}`}
+                                >
                                     <FaTrash size={10} />
+                                </button>
+                            </span>
+                        ))}
+                    </div>
+                    <div className="flex gap-2">
+                        <input
+                            className="flex-1 bg-black/40 border border-white/10 p-3 rounded-xl focus:border-primary/50 focus:outline-none transition text-white text-sm"
+                            value={newCategory}
+                            onChange={e => setNewCategory(e.target.value)}
+                            placeholder="New Section Name (e.g. Backend Tools)"
+                            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addCategory(); } }}
+                        />
+                        <button 
+                            type="button" 
+                            onClick={addCategory}
+                            className="bg-primary px-6 rounded-xl text-white font-bold text-sm hover:shadow-[0_0_15px_rgba(249,115,22,0.4)] transition-all cursor-pointer"
+                        >
+                            Add Section
+                        </button>
+                    </div>
+                </div>
+
+                {/* Skills Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                    {form.skills.map((skill, index) => (
+                        <div key={index} className={`bg-white/5 border ${errors.skills ? 'border-red-500/50' : 'border-white/10'} p-5 rounded-3xl flex gap-4 items-start relative group hover:bg-white/10 transition-all duration-300`}>
+                            {/* Icon Preview Box */}
+                            <div className="w-16 h-16 bg-black/40 rounded-2xl border border-white/10 flex items-center justify-center text-primary group-hover:scale-105 transition-transform duration-300">
+                                <DynamicIcon name={skill.icon} size={32} />
+                            </div>
+
+                            <div className="flex-1 grid grid-cols-1 gap-3">
+                                <input
+                                    className="w-full bg-black/40 border border-white/10 p-2.5 rounded-xl focus:border-primary/50 focus:outline-none transition text-white text-xs font-bold"
+                                    value={skill.name}
+                                    onChange={e => handleSkillChange(index, 'name', e.target.value)}
+                                    placeholder="Skill Name (e.g. React.js)"
+                                />
+                                <div className="grid grid-cols-2 gap-2">
+                                    <input
+                                        className="w-full bg-black/40 border border-white/10 p-2.5 rounded-xl focus:border-primary/50 focus:outline-none transition text-white text-[10px]"
+                                        value={skill.icon}
+                                        onChange={e => handleSkillChange(index, 'icon', e.target.value)}
+                                        placeholder="Icon (e.g. FaReact or devicon-...)"
+                                    />
+                                    <select
+                                        className="w-full bg-black/40 border border-white/10 p-2.5 rounded-xl focus:border-primary/50 focus:outline-none transition text-white text-[10px] cursor-pointer"
+                                        value={skill.category}
+                                        onChange={e => handleSkillChange(index, 'category', e.target.value)}
+                                    >
+                                        <option value="" disabled>Select Section</option>
+                                        {form.skillCategories.map(cat => (
+                                            <option key={cat} value={cat} className="bg-section-primary text-white">{cat}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+
+                            {form.skills.length > 1 && (
+                                <button 
+                                    type="button" 
+                                    onClick={() => removeSkill(index)} 
+                                    className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 hover:scale-110 transition-all shadow-xl cursor-pointer z-10"
+                                >
+                                    <FaTrash size={12} />
                                 </button>
                             )}
                         </div>
                     ))}
-                    <button type="button" onClick={addSkill} className="aspect-square border-2 border-dashed border-white/5 rounded-2xl text-gray-600 hover:border-primary hover:text-primary transition-all duration-300 flex flex-col items-center justify-center gap-2 bg-white/2 cursor-pointer">
+                    
+                    <button 
+                        type="button" 
+                        onClick={addSkill} 
+                        className="h-[108px] border-2 border-dashed border-white/10 rounded-3xl text-gray-500 hover:border-primary/50 hover:text-primary transition-all duration-300 flex flex-col items-center justify-center gap-2 bg-white/2 hover:bg-primary/5 cursor-pointer"
+                    >
                         <FaPlus size={24} />
-                        <span className="text-[10px] font-bold uppercase">Add Skill</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest">Architect New Skill</span>
                     </button>
                 </div>
             </div>

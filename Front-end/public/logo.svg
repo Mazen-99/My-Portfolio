@@ -9,6 +9,5 @@
   <path d="M50 5 L90 25 L90 75 L50 95 L10 75 L10 25 Z" fill="#0a0a0a" stroke="url(#grad)" stroke-width="4"/>
   <!-- Modern "M" symbol -->
   <path d="M30 70 V30 L50 50 L70 30 V70" fill="none" stroke="url(#grad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-  <!-- Dot at the end -->
-  <circle cx="75" cy="75" r="5" fill="#1b81ee" />
+  fill="#1b81ee" />
 </svg>

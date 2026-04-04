@@ -75,9 +75,6 @@ EMAIL_PASS=your_app_specific_password
 ## 📦 Installation
 
 ```bash
-# Clone the repository
-git clone [your-repo-link]
-
 # Install dependencies
 npm install
 

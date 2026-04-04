@@ -12,7 +12,9 @@
   "dependencies": {
     "@fontsource/great-vibes": "^5.2.8",
     "@tailwindcss/vite": "^4.1.18",
+    "axios": "^1.14.0",
     "devicon": "^2.17.0",
+    "framer-motion": "^12.38.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-easy-crop": "^5.5.6",

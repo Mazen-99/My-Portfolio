@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import NavbarItems from "./NavbarItems";
-import { FaWhatsapp, FaBars, FaTimes, FaCode } from "react-icons/fa";
+import { FaWhatsapp, FaBars, FaTimes, FaCode, FaSun, FaMoon } from "react-icons/fa";
 import { getAbout } from "../api/aboutApi";
 import { useTheme } from "../contexts/ThemeContext";
 
@@ -15,8 +15,8 @@ const sections = [
 
 const Navbar = () => {
 
-  const { theme, loading } = useTheme();
-  if (loading || !theme) return <p>Loading...</p>;
+  const { theme, mode, toggleTheme, loading } = useTheme();
+  if (loading || !theme) return null;
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
@@ -46,7 +46,7 @@ const Navbar = () => {
       },
       {
         root: null,
-        threshold: 0.4,
+        threshold: 0.1,
       }
     );
 
@@ -72,17 +72,21 @@ const Navbar = () => {
           {/* Logo */}
           <div className="flex items-center gap-4 group cursor-pointer">
             <div className="relative">
-              <div className="w-12 h-12 bg-primary/10 border border-primary/30 rounded-2xl flex items-center justify-center transform rotate-12 group-hover:rotate-0 transition-all duration-500 shadow-lg shadow-primary/20">
-                <FaCode className="text-primary text-2xl -rotate-12 group-hover:rotate-0 transition-all duration-500" />
+              <div className="w-12 h-12 bg-linear-to-br from-primary/20 to-primary/5 border-2 border-primary/20 rounded-2xl flex items-center justify-center transform rotate-12 group-hover:rotate-0 transition-all duration-500 shadow-lg shadow-primary/10 overflow-hidden backdrop-blur-sm">
+                {/* Visual Accent */}
+                <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <span className="text-primary text-3xl font-black italic -rotate-12 group-hover:rotate-0 transition-all duration-500 select-none">
+                  M
+                </span>
               </div>
-              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-primary rounded-full border-2 border-section-primary animate-pulse"></div>
+              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-primary rounded-full border-2 border-section-primary shadow-sm shadow-primary/50 animate-pulse"></div>
             </div>
             <div className="flex flex-col">
-              <span className="text-2xl font-black tracking-tighter leading-none italic">
+              <span className="text-2xl font-black tracking-tighter leading-none italic text-headline group-hover:text-primary transition-colors">
                 MAZEN<span className="text-primary">.</span>
               </span>
-              <span className="text-[10px] font-bold text-gray-500 tracking-[0.3em] uppercase leading-none mt-1">
-                Developer
+              <span className="text-[10px] font-bold text-description tracking-[0.3em] uppercase leading-none mt-1">
+                Portfolio
               </span>
             </div>
           </div>
@@ -95,8 +99,17 @@ const Navbar = () => {
             />
           </div>
 
-          {/* Contact Button + Mobile Toggle */}
+          {/* Contact Button + Theme Toggle + Mobile Toggle */}
           <div className="flex items-center gap-4">
+            {/* Theme Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300 hover:bg-primary/20 cursor-pointer shadow-lg shadow-primary/5"
+              title={mode === 'dark' ? 'Light Mode' : 'Dark Mode'}
+            >
+              {mode === 'dark' ? <FaSun size={18} /> : <FaMoon size={18} />}
+            </button>
+
             <button
               onClick={openWhatsApp}
               className="hidden md:flex bg-primary hover:opacity-90 text-white font-semibold py-2 px-4 rounded-lg items-center gap-2 transition duration-300 shadow-lg shadow-primary/20 cursor-pointer"
@@ -107,7 +120,7 @@ const Navbar = () => {
 
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden text-white text-3xl"
+              className="md:hidden text-headline text-3xl"
             >
               {isMenuOpen ? <FaTimes /> : <FaBars />}
             </button>
