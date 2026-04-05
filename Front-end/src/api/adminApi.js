@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/admin`;
+const API_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin`;
 
 /**
  * Check if admin is authorized using the specialized 'x-admin-password' header.

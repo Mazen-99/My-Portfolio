@@ -9,7 +9,8 @@ exports.getAbout = async (req, res) => {
     }
     res.status(200).json(about);
   } catch (error) {
-    res.status(500).json({ message: 'Internal server error' });
+    console.error('Error in getAbout:', error);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 };
 
