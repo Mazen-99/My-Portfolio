@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaSignOutAlt, FaTimes } from 'react-icons/fa';
+import { FaSignOutAlt, FaTimes, FaHome } from 'react-icons/fa';
 import Modal from './Modal';
 
 const Sidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen, tabs }) => {
@@ -33,7 +33,7 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen, tabs })
                     </button>
                 </div>
 
-                <nav className="space-y-3 flex-1">
+                <nav className="space-y-3 flex-1 overflow-y-auto pr-2">
                     {tabs.map(tab => (
                         <button
                             key={tab.id}
@@ -51,13 +51,23 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen, tabs })
                     ))}
                 </nav>
 
-                <button
-                    onClick={() => setShowLogoutModal(true)}
-                    className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-red-500 hover:bg-red-500/10 transition duration-300 group cursor-pointer mt-auto border border-red-500/10"
-                >
-                    <FaSignOutAlt className="group-hover:-translate-x-1 transition duration-500" />
-                    <span className="font-bold tracking-tight uppercase text-xs">Logout System</span>
-                </button>
+                <div className="mt-auto space-y-3 pt-6 border-t border-white/5">
+                    <a
+                        href="/"
+                        className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-headline hover:bg-primary/10 hover:text-primary transition duration-300 group cursor-pointer border border-white/5"
+                    >
+                        <FaHome className="group-hover:scale-110 transition duration-500 text-primary" />
+                        <span className="font-bold tracking-tight uppercase text-xs">Back To Home</span>
+                    </a>
+
+                    <button
+                        onClick={() => setShowLogoutModal(true)}
+                        className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-red-500 hover:bg-red-500/10 transition duration-300 group cursor-pointer border border-red-500/10"
+                    >
+                        <FaSignOutAlt className="group-hover:-translate-x-1 transition duration-500" />
+                        <span className="font-bold tracking-tight uppercase text-xs">Logout System</span>
+                    </button>
+                </div>
             </aside>
 
             {/* Logout Confirmation Modal */}
