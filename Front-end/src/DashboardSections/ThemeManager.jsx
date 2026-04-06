@@ -5,10 +5,12 @@ import Toast from '../components/Toast';
 
 const ThemeManager = ({ data, onSave, password }) => {
     const [form, setForm] = useState({
-        primary: '#f97316',
+        lightPrimary: '#f97316',
+        darkPrimary: '#f97316',
+        lightDescription: '#64748b',
+        darkDescription: '#94a3b8',
         darkHeadline: '#ffffff',
         lightHeadline: '#0f172a',
-        description: '#94a3b8',
         darkPrimarySection: '#0f172a',
         lightPrimarySection: '#f8fafc',
         darkSecondarySection: '#1e293b',
@@ -85,19 +87,39 @@ const ThemeManager = ({ data, onSave, password }) => {
                 </div>
             </div>
 
-            {/* Core & Shared Colors */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 bg-white/2 p-8 rounded-4xl border border-white/5">
-                <ColorInput
-                    label="Accent Color (Shared)"
-                    dbField="primary"
-                    value={form.primary}
-                    onChange={val => setForm({ ...form, primary: val })}
+            {/* Primary & Accent Colors (Dark vs Light) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+                <ColorInput 
+                    icon={<FaSun className="text-orange-500" />}
+                    label="Light Accent Color (Primary)" 
+                    dbField="lightPrimary" 
+                    value={form.lightPrimary} 
+                    onChange={val => setForm({ ...form, lightPrimary: val })} 
                 />
-                <ColorInput
-                    label="Body Text Color (Shared)"
-                    dbField="description"
-                    value={form.description}
-                    onChange={val => setForm({ ...form, description: val })}
+                <ColorInput 
+                    icon={<FaMoon className="text-blue-500" />}
+                    label="Dark Accent Color (Primary)" 
+                    dbField="darkPrimary" 
+                    value={form.darkPrimary} 
+                    onChange={val => setForm({ ...form, darkPrimary: val })} 
+                />
+            </div>
+
+            {/* Description / Body Text (Dark vs Light) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+                <ColorInput 
+                    icon={<FaSun className="text-orange-400" />}
+                    label="Light Body Text" 
+                    dbField="lightDescription" 
+                    value={form.lightDescription} 
+                    onChange={val => setForm({ ...form, lightDescription: val })} 
+                />
+                <ColorInput 
+                    icon={<FaMoon className="text-blue-400" />}
+                    label="Dark Body Text" 
+                    dbField="darkDescription" 
+                    value={form.darkDescription} 
+                    onChange={val => setForm({ ...form, darkDescription: val })} 
                 />
             </div>
 

@@ -20,12 +20,10 @@ export const ThemeProvider = ({ children }) => {
         if (!data) return;
         const root = document.documentElement;
 
-        // Apply shared primary color
-        if (data.primary) root.style.setProperty('--primary-color', data.primary);
-        if (data.description) root.style.setProperty('--description-color', data.description);
-
         if (currentMode === 'dark') {
             // Apply Dark-specific values
+            if (data.darkPrimary) root.style.setProperty('--primary-color', data.darkPrimary);
+            if (data.darkDescription) root.style.setProperty('--description-color', data.darkDescription);
             if (data.darkHeadline) root.style.setProperty('--headline-color', data.darkHeadline);
             if (data.darkPrimarySection) root.style.setProperty('--primary-section-color', data.darkPrimarySection);
             if (data.darkSecondarySection) root.style.setProperty('--secondary-section-color', data.darkSecondarySection);
@@ -33,6 +31,8 @@ export const ThemeProvider = ({ children }) => {
             root.classList.remove('light');
         } else {
             // Apply Light-specific values
+            if (data.lightPrimary) root.style.setProperty('--primary-color', data.lightPrimary);
+            if (data.lightDescription) root.style.setProperty('--description-color', data.lightDescription);
             if (data.lightHeadline) root.style.setProperty('--headline-color', data.lightHeadline);
             if (data.lightPrimarySection) root.style.setProperty('--primary-section-color', data.lightPrimarySection);
             if (data.lightSecondarySection) root.style.setProperty('--secondary-section-color', data.lightSecondarySection);

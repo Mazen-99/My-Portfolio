@@ -36,19 +36,21 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
-          }
-        });
-      },
-      {
-        root: null,
-        threshold: 0.1,
-      }
-    );
+    const observerOptions = {
+      root: null,
+      rootMargin: "-150px 0px -50% 0px", // Trigger when section is near top
+      threshold: 0,
+    };
+
+    const observerCallback = (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
 
     sections.forEach((id) => {
       const el = document.getElementById(id);
@@ -66,7 +68,7 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 bg-section-primary shadow-2xl shadow-primary/50 z-50">
-      <div className="container mx-auto px-4 md:px-8">
+      <div className="container mx-auto px-5">
         <div className="flex justify-between items-center py-3">
 
           {/* Logo */}
@@ -96,6 +98,7 @@ const Navbar = () => {
             <NavbarItems
               isMobile={false}
               activeSection={activeSection}
+              setActiveSection={setActiveSection}
             />
           </div>
 
@@ -104,7 +107,7 @@ const Navbar = () => {
             {/* Theme Toggle Button */}
             <button
               onClick={toggleTheme}
-              className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300 hover:bg-primary/20 cursor-pointer shadow-lg shadow-primary/5"
+              className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300 hover:bg-primary/20 cursor-pointer shadow-lg shadow-primary/50"
               title={mode === 'dark' ? 'Light Mode' : 'Dark Mode'}
             >
               {mode === 'dark' ? <FaSun size={18} /> : <FaMoon size={18} />}
@@ -134,6 +137,7 @@ const Navbar = () => {
               <NavbarItems
                 isMobile={true}
                 activeSection={activeSection}
+                setActiveSection={setActiveSection}
                 onItemClick={() => setIsMenuOpen(false)}
               />
 

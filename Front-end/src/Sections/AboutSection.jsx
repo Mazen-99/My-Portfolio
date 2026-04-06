@@ -24,8 +24,8 @@ const AboutSection = () => {
     if (loading) return null;
 
     return (
-        <section id='about' className='min-h-screen bg-section-primary text-headline flex flex-col items-center pt-15'>
-            <div className='container mx-auto px-4 md:px-8 w-full'>
+        <section id='about' className='min-h-screen bg-section-primary text-headline flex flex-col items-center'>
+            <div className='container mx-auto px-5 py-5 w-full'>
                 <motion.div 
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}

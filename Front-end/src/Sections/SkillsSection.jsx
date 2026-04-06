@@ -37,8 +37,8 @@ const SkillsSection = () => {
 
     if (skills.length === 0) {
         return (
-            <section id="skills" className="min-h-screen bg-section-secondary text-headline flex flex-col items-center py-20">
-                <div className="container mx-auto px-4 md:px-8 w-full">
+            <section id="skills" className="min-h-screen bg-section-secondary text-headline flex flex-col items-center">
+                <div className="container mx-auto px-5 py-5 w-full">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl lg:text-5xl font-bold mb-4">
                             My <span className="text-primary">Skills</span>
@@ -54,8 +54,8 @@ const SkillsSection = () => {
     }
 
     return (
-        <section id="skills" className="min-h-screen bg-section-secondary text-headline flex flex-col items-center py-20">
-            <div className="container mx-auto px-4 md:px-8 w-full">
+        <section id="skills" className="min-h-screen bg-section-secondary text-headline flex flex-col items-center">
+            <div className="container mx-auto px-5 py-5 w-full">
                 <motion.div 
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}

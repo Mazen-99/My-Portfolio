@@ -123,8 +123,8 @@ const ContactSection = () => {
     }, [])
 
     return (
-        <section id='contact' className='min-h-screen bg-section-secondary text-headline flex flex-col items-center pt-15 pb-15 relative'>
-            <div className='container mx-auto px-4 md:px-8 w-full'>
+        <section id='contact' className='min-h-screen bg-section-secondary text-headline flex flex-col items-center relative'>
+            <div className='container mx-auto px-5 py-5 w-full'>
                 <div className='text-center mb-16'>
                     <h2 className='text-4xl lg:text-5xl font-bold mb-4'>
                         Get In <span className='text-primary'>Touch</span>

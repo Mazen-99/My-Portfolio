@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { getServices } from '../api/serviceApi'
 import DynamicIcon from '../components/DynamicIcon'
 import { motion } from 'framer-motion'
-import { Link } from 'react-scroll'
-
 const ServiceSection = () => {
   const [services, setServices] = useState([])
   const [loading, setLoading] = useState(true)
@@ -25,9 +23,16 @@ const ServiceSection = () => {
 
   if (loading) return null;
 
+  const handleScroll = (id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
-    <section id='services' className='min-h-screen bg-section-secondary text-headline flex flex-col items-center py-15'>
-      <div className='container mx-auto px-4 md:px-8 w-full'>
+    <section id='services' className='min-h-screen bg-section-secondary text-headline flex flex-col items-center'>
+      <div className='container mx-auto px-5 py-5 w-full'>
         <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -61,16 +66,13 @@ const ServiceSection = () => {
               </p>
               
               <div className='mt-auto pt-4'>
-                <Link 
-                  to="contact" 
-                  smooth={true}
-                  duration={500}
-                  offset={-70}
-                  className='inline-flex items-center gap-2 text-primary font-bold text-sm uppercase tracking-wider group-hover:gap-4 transition-all duration-300 cursor-pointer'
+                <button
+                  onClick={() => handleScroll('contact')}
+                  className='inline-flex items-center gap-2 text-primary font-bold text-sm uppercase tracking-wider group-hover:gap-4 transition-all duration-300 cursor-pointer bg-transparent border-0 p-0'
                 >
                   Contact Me
                   <span className='w-8 h-[2px] bg-primary group-hover:w-12 transition-all duration-300' />
-                </Link>
+                </button>
               </div>
             </motion.div>
           ))}

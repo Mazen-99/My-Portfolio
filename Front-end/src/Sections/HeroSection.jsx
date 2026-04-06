@@ -62,8 +62,8 @@ const HeroSection = () => {
     };
 
     return (
-        <section id="hero" className="min-h-screen bg-section-primary text-headline flex items-center justify-center pb-15">
-            <div className="container mx-auto px-4 md:px-8 w-full">
+        <section id="hero" className="min-h-screen bg-section-primary text-headline flex items-center justify-center">
+            <div className="container mx-auto px-5 py-5 pb-20 w-full">
                 <div className="grid grid-cols-1 lg:grid-cols-2 items-center">
 
                     {/* Left Content */}
